@@ -1,107 +1,33 @@
+# CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
----
+## Projeto
 
-## **PROMPT**
+"Home de Rotina Diária" do Cedrick: uma página estática, **um único ficheiro** [index.html](index.html) com `<style>` interno. Não há build, dependências, testes nem linter. Para ver alterações, abrir o ficheiro no browser (a única dependência externa são as Google Fonts: Gloock, Fraunces, Inter). Conteúdo e comentários estão em português (pt-PT); manter assim.
 
-Cria uma página HTML + CSS simples, extremamente limpa e elegante, com estilo minimalista premium (inspirado em Apple, Notion e restaurantes de alto padrão).  
-A página será a minha “Home de Rotina Diária”, com foco em produtividade, metas e hábitos.
+## Regras do projeto (do brief original)
 
-### **Requisitos gerais**
-- Design minimalista, espaçamento amplo, tipografia premium (ex.: Inter, Lato ou Playfair Display).  
-- Paleta clara e suave (branco, cinza, dourado suave).  
-- Layout responsivo.  
-- Sem frameworks — apenas HTML + CSS puro.  
-- Estilo de restaurante chique: linhas finas, títulos elegantes, secções bem separadas, sensação de calma e luxo.
+- Apenas HTML + CSS puros. **Sem JavaScript e sem frameworks.** Toda a interatividade tem de ser feita em CSS.
+- Estética minimalista premium: espaçamento amplo, linhas finas, sombras suaves, animações leves de hover.
+- Tudo deve continuar fácil de editar à mão: manter os comentários de secção e as variáveis CSS.
+- O brief original pedia paleta branco/cinza/dourado, mas a página implementada usa uma **paleta verde** (`#051F20 → #DAF1DE`, referência em `palete_planner.jpg`). `design.jpg`, `H1.png` e `H2.png` são referências visuais. Seguir a paleta verde atual, não o dourado do brief.
 
-### **Estrutura da página**
-1. **Header elegante**
-   - Título: “Rotina Diária do Cedrick”
-   - Subtítulo pequeno: “Foco, disciplina e evolução constante”
-   - Uma linha fina dourada abaixo do título.
+## Arquitetura de [index.html](index.html)
 
-2. **Secção: Metas do Dia**
-   - Caixa com checklist.
-   - Exemplos de metas:
-     - Alimentação saudável
-     - Estudar Claude (Code, Design, Cowork)
-     - Estudar Tráfego Pago
-     - Treino físico
-     - Leitura
-   - Cada item deve ter um checkbox estilizado premium.
+- **CSS (linhas ~12-420), dividido em blocos numerados** (`1. VARIÁVEIS`, … `13. POP-UP`, `14. ANIMAÇÕES`). Cores, fontes, raio e espaçamentos vivem em `:root`; nunca fixar cores nas regras.
+- **Modo claro/escuro sem JS:** um `<input type="checkbox" id="tema">` no topo do `.container` + `html:has(#tema:checked)` que redefine as variáveis `:root`. O `<label for="tema">` no header é o interruptor. Qualquer cor nova tem de existir nos dois temas, via variável.
+- **Pop-ups dos módulos com `:target`:** cada `<li>` de módulo liga a `#mod-c1…c5` (Claude) ou `#mod-t1…t5` (Tráfego); os `.modal` correspondentes estão no fim do `<main>` e abrem/fecham via `:target`. Fechar volta a `#cursos`. Ao adicionar um módulo, criar o `<li>` **e** o `.modal` com o `id` correspondente.
+- **Barras de progresso:** `.bar > span` usa a custom property inline `--value` (ex.: `style="--value:30%"`). Atualizar o `<strong>` de percentagem e o `aria-valuenow` em conjunto. Existem barras na secção "Cursos em andamento" e na "Progresso dos Cursos" — manter os valores consistentes.
+- **Animações de scroll** usam `animation-timeline: view()` dentro de `@supports`, com fallback estático; `prefers-reduced-motion` desliga tudo.
+- **Secções do `<main>`, por ordem:** Prioridade Máxima, Metas do Dia (checkboxes estilizados com `.check`/`.box`), Cursos em andamento, Progresso dos Cursos, Mini Dashboard, Rotina Manhã/Noite, Hábitos essenciais, Motivação diária (frase e autor trocados manualmente no comentário indicado), Vitórias do Dia, e o footer.
+- Breakpoints responsivos: `900px` e `680px`.
 
-3. **Secção: Cursos em andamento**
-   - Dois blocos:
-     - **Claude — Domínio Completo**
-     - **Gestor de Tráfego — Wesley Serute**
-   - Cada bloco deve ter:
-     - Barra de progresso estilizada
-     - Lista de módulos
-     - Botão “Continuar Estudo”
+## Git
 
-4. **Secção: Hábitos essenciais**
-   - Pequenos cartões com ícones minimalistas:
-     - Água
-     - Sono
-     - Meditação
-     - Organização
-     - Foco profundo (Deep Work)
+Repositório privado: https://github.com/betadigital-ads/planner (branch `main`, tag `v0.1.0` = backup da versão inicial).
 
-5. **Secção: Motivação diária**
-   - Uma frase motivacional elegante.
-   - Fundo suave com borda dourada.
-
-6. **Footer**
-   - Texto pequeno: “Criado por Cedrick — Evoluir todos os dias”
-   - Estilo discreto.
-
-### **Estilo**
-- Usa CSS com:
-  - sombras suaves
-  - bordas finas douradas
-  - animações leves (hover)
-  - layout centrado e espaçado
-- Mantém tudo extremamente organizado e fácil de editar.
-
-### **Entrega**
-- Entrega o código completo em um único ficheiro HTML com `<style>` interno.
-- Não usar JavaScript.
-- Foco total em estética premium e simplicidade.
-
----
-
-# 💡 **Ideias extra para deixar a página ainda mais poderosa**
-
-### **1. Modo claro / escuro**
-Mesmo sem JS, dá para criar duas versões da página e alternar manualmente.
-
-### **2. Frase motivacional automática**
-Tu podes trocar a frase todos os dias manualmente — cria um espaço para isso.
-
-### **3. Secção “Vitórias do Dia”**
-Um bloco onde escreves:
-- O que fizeste bem
-- O que aprendeste
-- O que vais melhorar amanhã
-
-### **4. Secção “Prioridade Máxima”**
-Um cartão grande com:
-- “A única coisa que preciso fazer hoje para avançar”
-
-### **5. Secção “Rotina da Manhã / Noite”**
-Dois blocos:
-- Manhã: água, arrumar cama, leitura, treino
-- Noite: desligar ecrãs, planeamento, meditação
-
-### **6. Secção “Progresso dos Cursos”**
-Com barras de progresso:
-- Claude Code: 40%
-- Claude Design: 20%
-- Cowork: 10%
-- Tráfego Pago: 35%
-
-### **7. Secção “Mini Dashboard”**
-Com números:
-- Tarefas concluídas hoje
-- Dias consecutivos produtivos
-- Horas estudadas esta semana
+- Fazer commit de **cada alteração** com mensagem clara, e `git push` regularmente. O objetivo é poder reverter se algo correr mal.
+- Criar uma tag anotada (`vX.Y.Z`) em marcos importantes.
+- A identidade git está definida apenas localmente neste repo (Cedrick / cebeta44@gmail.com).
+- O `gh` não está no PATH do PowerShell; usar `& "C:\Program Files\GitHub CLI\gh.exe"`.
