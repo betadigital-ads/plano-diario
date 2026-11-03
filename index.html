@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotina Diária do Cedrick</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Gloock&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   1. VARIÁVEIS — edita aqui cores, fontes e espaçamentos
+   ========================================================== */
+:root {
+  /* Paleta: #051F20 · #0B2B26 · #163832 · #235347 · #8EB69B · #DAF1DE */
+  --bg:        #051F20;
+  --page-bg:
+    radial-gradient(900px 600px at 85% -5%, rgba(35,83,71,.75), transparent 60%),
+    radial-gradient(800px 700px at -10% 45%, rgba(22,56,50,.9), transparent 60%),
+    linear-gradient(170deg, #0B2B26 0%, #051F20 70%);
+  --surface:   rgba(218, 241, 222, .055);
+  --surface-2: rgba(218, 241, 222, .10);
+  --text:      #DAF1DE;
+  --muted:     #8EB69B;
+  --line:      rgba(142, 182, 155, .18);
+  --accent:      #8EB69B;
+  --accent-soft: rgba(142, 182, 155, .45);
+  --accent-bg:   rgba(142, 182, 155, .10);
+  --on-accent:   #051F20;
+  --btn-bg:    linear-gradient(135deg, #DAF1DE, #8EB69B);
+  --btn-text:  #051F20;
+  --shadow:    0 10px 36px rgba(0, 0, 0, .35);
+  --shadow-hover: 0 16px 44px rgba(0, 0, 0, .5);
+
+  --font-h1:  "Gloock", "Bodoni Moda", Georgia, serif;           /* títulos principais */
+  --serif:    "Fraunces", Georgia, "Times New Roman", serif;      /* H2 / secções */
+  --sans:     "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --radius: 24px;
+  --space-section: clamp(3.5rem, 8vw, 6rem);
+}
+
+/* Modo claro (interruptor no topo, sem JavaScript) */
+html:has(#tema:checked) {
+  --bg:        #DAF1DE;
+  --page-bg:
+    radial-gradient(900px 600px at 85% -5%, rgba(142,182,155,.7), transparent 60%),
+    linear-gradient(170deg, #DAF1DE 0%, #c4e3cb 100%);
+  --surface:   rgba(255, 255, 255, .55);
+  --surface-2: rgba(35, 83, 71, .10);
+  --text:      #051F20;
+  --muted:     #235347;
+  --line:      rgba(35, 83, 71, .2);
+  --accent:      #235347;
+  --accent-soft: rgba(35, 83, 71, .4);
+  --accent-bg:   rgba(142, 182, 155, .28);
+  --on-accent:   #DAF1DE;
+  --btn-bg:    linear-gradient(135deg, #235347, #163832);
+  --btn-text:  #DAF1DE;
+  --shadow:    0 10px 36px rgba(5, 31, 32, .10);
+  --shadow-hover: 0 16px 44px rgba(5, 31, 32, .18);
+}
+
+/* ==========================================================
+   2. BASE
+   ========================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  background-image: var(--page-bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  transition: background .4s, color .4s;
+}
+
+.container { width: min(1000px, 100% - 2.5rem); margin-inline: auto; }
+
+section { margin-top: var(--space-section); }
+
+.section-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: .02em;
+  text-align: center;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 48px; height: 1px;
+  margin: .9rem auto 2.5rem;
+  background: var(--accent);
+}
+
+.eyebrow {
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Cartão base reutilizável */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.06);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  padding: 2rem;
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent-soft);
+}
+
+/* ==========================================================
+   3. HEADER
+   ========================================================== */
+.theme-toggle { position: absolute; opacity: 0; pointer-events: none; }
+
+header { text-align: center; padding: clamp(4rem, 10vw, 7rem) 0 0; position: relative; }
+
+.toggle-label {
+  position: absolute; top: 1.5rem; right: 0;
+  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--muted); cursor: pointer;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: .4rem 1rem; transition: all .3s;
+}
+.toggle-label:hover { color: var(--accent); border-color: var(--accent-soft); }
+.toggle-label::before { content: "Modo claro"; }
+html:has(#tema:checked) .toggle-label::before { content: "Modo escuro"; }
+#tema:focus-visible ~ header .toggle-label { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+header h1 {
+  font-family: var(--font-h1);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  letter-spacing: .01em;
+  line-height: 1.2;
+  margin-top: 1rem;
+}
+header .subtitle {
+  margin-top: .8rem;
+  font-size: .85rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+header .accent-line {
+  width: 120px; height: 1px; margin: 2rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+/* ==========================================================
+   4. PRIORIDADE MÁXIMA
+   ========================================================== */
+.priority {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--accent-bg);
+  border-color: var(--accent-soft);
+}
+.priority h3 {
+  font-family: var(--serif); font-weight: 700;
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  margin: .8rem 0 .4rem;
+}
+.priority .note { color: var(--muted); font-size: .85rem; font-style: italic; }
+.priority .write-line {
+  margin: 1.5rem auto 0; max-width: 520px; min-height: 2rem;
+  border-bottom: 1px solid var(--accent-soft);
+  color: var(--text);
+}
+
+/* ==========================================================
+   5. METAS DO DIA (checklist)
+   ========================================================== */
+.checklist { list-style: none; max-width: 640px; margin-inline: auto; }
+.routine .checklist { max-width: none; }
+.checklist li { border-bottom: 1px solid var(--line); }
+.checklist li:last-child { border-bottom: none; }
+
+.check {
+  display: flex; align-items: center; gap: 1.1rem;
+  padding: 1.05rem .25rem; cursor: pointer;
+  transition: padding-left .3s;
+}
+.check:hover { padding-left: .6rem; }
+
+.check input { position: absolute; opacity: 0; }
+
+.box {
+  flex: none; width: 22px; height: 22px;
+  border: 1px solid var(--accent-soft); border-radius: 50%;
+  display: grid; place-items: center;
+  transition: all .3s;
+}
+.box::after {
+  content: ""; width: 5px; height: 10px;
+  border: solid var(--on-accent); border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg) scale(0); margin-top: -2px;
+  transition: transform .25s ease;
+}
+.check:hover .box { border-color: var(--accent); }
+.check input:checked + .box { background: var(--accent); border-color: var(--accent); }
+.check input:checked + .box::after { transform: rotate(45deg) scale(1); }
+.check input:focus-visible + .box { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.check .label { transition: color .3s; }
+.check input:checked ~ .label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent-soft); }
+
+/* ==========================================================
+   6. CURSOS
+   ========================================================== */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; }
+
+.course h3 { font-family: var(--serif); font-weight: 700; font-size: 1.3rem; line-height: 1.35; }
+.course .author { color: var(--muted); font-size: .8rem; letter-spacing: .08em; margin-top: .2rem; }
+
+.progress-head { display: flex; justify-content: space-between; align-items: baseline; margin: 1.6rem 0 .5rem; font-size: .75rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
+.progress-head strong { color: var(--accent); font-weight: 500; font-size: .9rem; letter-spacing: .05em; }
+
+.bar { height: 4px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.bar > span {
+  display: block; height: 100%; width: var(--value);
+  background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+  border-radius: 4px;
+}
+
+.modules { list-style: none; margin: 1.6rem 0 2rem; font-size: .92rem; }
+.modules li { display: flex; gap: .8rem; padding: .45rem 0; color: var(--text); }
+.modules li::before { content: "○"; color: var(--accent-soft); }
+.modules li.done { color: var(--muted); }
+.modules li.done::before { content: "●"; color: var(--accent); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 1.2rem; text-decoration: none;
+  font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 500;
+  color: var(--btn-text); background: var(--btn-bg);
+  padding: .95rem 1.9rem; border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  transition: all .3s ease;
+}
+.btn::after { content: "→"; font-size: 1.1em; transition: transform .3s; }
+.btn:hover, .btn:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.35); }
+.btn:hover::after { transform: translateX(4px); }
+
+/* ==========================================================
+   7. PROGRESSO DOS CURSOS + MINI DASHBOARD
+   ========================================================== */
+.progress-list { max-width: 640px; margin-inline: auto; display: grid; gap: 1.6rem; }
+.progress-list .progress-head { margin: 0 0 .5rem; }
+.progress-list .progress-head span:first-child { color: var(--text); letter-spacing: .08em; font-size: .85rem; text-transform: none; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+.stat { text-align: center; padding: 2.2rem 1.2rem; }
+.stat .num { font-family: var(--font-h1); font-size: clamp(2.2rem, 5vw, 3rem); color: var(--accent); line-height: 1; }
+.stat .desc { margin-top: .8rem; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+
+/* ==========================================================
+   8. ROTINA MANHÃ / NOITE
+   ========================================================== */
+.routine h3 { font-family: var(--serif); font-weight: 700; font-size: 1.3rem; margin-bottom: 1.2rem; }
+.routine ul { list-style: none; }
+
+/* ==========================================================
+   9. HÁBITOS
+   ========================================================== */
+.habits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; }
+.habit { text-align: center; padding: 2rem 1rem; }
+.habit svg { width: 56px; height: 56px; padding: 14px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line); stroke: var(--accent); fill: none; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .4s ease; }
+.habit:hover svg { transform: scale(1.12); }
+.habit p { margin-top: 1rem; font-size: .8rem; letter-spacing: .1em; }
+
+/* ==========================================================
+   10. MOTIVAÇÃO + VITÓRIAS
+   ========================================================== */
+.quote {
+  text-align: center; background: var(--accent-bg);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border: 1px solid var(--accent-soft); border-radius: var(--radius);
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
+}
+.quote blockquote {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(1.3rem, 3.2vw, 1.9rem); line-height: 1.5;
+}
+.quote cite { display: block; margin-top: 1.5rem; font-style: normal; font-size: .75rem; letter-spacing: .25em; text-transform: uppercase; color: var(--accent); }
+.quote .hint { margin-top: 1.2rem; font-size: .72rem; color: var(--muted); }
+
+.wins { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+.wins h3 { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; margin-bottom: 1.2rem; }
+.write {
+  display: block; width: 100%; resize: vertical; border: 0; outline: 0;
+  font: inherit; font-size: .95rem; color: var(--text);
+  line-height: 2rem; min-height: 6.2rem; padding: 0;
+  background: repeating-linear-gradient(transparent 0 calc(2rem - 1px), var(--line) calc(2rem - 1px) 2rem) 0 0 / 100% 2rem;
+  background-attachment: local;
+  transition: box-shadow .3s;
+}
+.write::placeholder { color: var(--muted); opacity: .6; }
+.write:focus { box-shadow: 0 2px 0 -1px var(--accent); }
+
+/* ==========================================================
+   11. FOOTER
+   ========================================================== */
+footer {
+  margin-top: var(--space-section); padding: 2.5rem 0 3rem;
+  border-top: 1px solid var(--line);
+  text-align: center; font-size: .75rem; letter-spacing: .15em; color: var(--muted);
+}
+
+/* ==========================================================
+   12. RESPONSIVO
+   ========================================================== */
+@media (max-width: 900px) {
+  .habits { grid-template-columns: repeat(3, 1fr); }
+  .wins { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  .grid-2, .stats { grid-template-columns: 1fr; }
+  .habits { grid-template-columns: repeat(2, 1fr); }
+  .card { padding: 1.5rem; }
+  .toggle-label { position: static; display: inline-block; margin-bottom: 1rem; }
+}
+
+/* ==========================================================
+   13. POP-UP DE MÓDULOS (CSS puro com :target)
+   ========================================================== */
+.modules a { color: inherit; text-decoration: none; flex: 1; transition: color .3s, transform .3s; }
+.modules a:hover { color: var(--accent); transform: translateX(4px); }
+.modules li { cursor: pointer; }
+.modules li a::after { content: " ↗"; opacity: 0; transition: opacity .3s; }
+.modules li a:hover::after { opacity: .8; }
+
+.modal {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 1.25rem;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .35s ease, visibility 0s linear .35s;
+}
+.modal:target { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
+.modal .backdrop { position: absolute; inset: 0; background: rgba(5, 31, 32, .65); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.dialog {
+  position: relative; width: min(520px, 100%); max-height: 90vh; overflow-y: auto;
+  background: var(--bg); background-image: var(--page-bg);
+  border: 1px solid var(--accent-soft); border-radius: var(--radius);
+  box-shadow: 0 30px 80px rgba(0,0,0,.5); padding: 2.5rem 2rem 2rem;
+  transform: translateY(24px) scale(.96);
+  transition: transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.modal:target .dialog { transform: none; }
+.dialog h3 { font-family: var(--serif); font-weight: 700; font-size: 1.5rem; margin: .6rem 0 .2rem; line-height: 1.3; }
+.dialog .sub { color: var(--muted); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+.dialog ol { margin: 1.5rem 0 2rem; padding-left: 0; list-style: none; counter-reset: aula; }
+.dialog li { counter-increment: aula; display: flex; gap: 1rem; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+.dialog li::before { content: counter(aula, decimal-leading-zero); color: var(--accent); font-weight: 500; font-size: .8rem; padding-top: .15rem; }
+.dialog li:last-child { border-bottom: 0; }
+.close { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); text-decoration: none; transition: transform .3s, border-color .3s; }
+.close:hover { transform: rotate(90deg); border-color: var(--accent); }
+
+/* ==========================================================
+   14. ANIMAÇÕES (CSS puro)
+   ========================================================== */
+@keyframes rise   { from { opacity: 0; translate: 0 28px; } to { opacity: 1; translate: 0 0; } }
+@keyframes fill   { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes drift  { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(40px,-30px) scale(1.12); } }
+@keyframes grow   { from { width: 0; } to { width: 120px; } }
+
+/* Entrada do header, em cascata */
+header .eyebrow     { animation: rise 1s cubic-bezier(.2,.8,.2,1) .1s both; }
+header h1           { animation: rise 1.1s cubic-bezier(.2,.8,.2,1) .25s both; }
+header .subtitle    { animation: rise 1s cubic-bezier(.2,.8,.2,1) .45s both; }
+header .accent-line { animation: grow 1.2s cubic-bezier(.2,.8,.2,1) .7s both; }
+.toggle-label       { animation: rise 1s ease .9s both; }
+
+/* Luzes suaves em movimento no fundo */
+body::before, body::after {
+  content: ""; position: fixed; z-index: -1; border-radius: 50%; filter: blur(90px); pointer-events: none;
+  background: radial-gradient(circle, rgba(35,83,71,.55), transparent 70%);
+  animation: drift 18s ease-in-out infinite;
+}
+body::before { width: 520px; height: 520px; top: 8%; left: -8%; }
+body::after  { width: 440px; height: 440px; bottom: 5%; right: -6%; animation-delay: -9s; }
+
+/* Revelação ao fazer scroll (usa translate/opacity para não bloquear o hover) */
+@supports (animation-timeline: view()) {
+  main .section-title, main .card, main .quote, main .modules li {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+  main .grid-2 > :nth-child(2), main .stats > :nth-child(2), main .wins > :nth-child(2), main .habits > :nth-child(2) { animation-range: entry 8% entry 63%; }
+  main .stats > :nth-child(3), main .wins > :nth-child(3), main .habits > :nth-child(3) { animation-range: entry 16% entry 71%; }
+  main .habits > :nth-child(4) { animation-range: entry 24% entry 79%; }
+  main .habits > :nth-child(5) { animation-range: entry 32% entry 87%; }
+
+  .bar > span {
+    transform-origin: left; animation: fill linear both;
+    animation-timeline: view(); animation-range: entry 20% cover 35%;
+  }
+}
+
+/* Interações extra */
+.check input:checked + .box { box-shadow: 0 0 0 6px rgba(142,182,155,.15); }
+.stat .num { transition: transform .4s ease; }
+.stat:hover .num { transform: scale(1.06); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <input type="checkbox" id="tema" class="theme-toggle" aria-label="Alternar modo escuro">
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <label for="tema" class="toggle-label"></label>
+    <p class="eyebrow">Home · Rotina Diária</p>
+    <h1>Rotina Diária do Cedrick</h1>
+    <p class="subtitle">Foco, disciplina e evolução constante</p>
+    <div class="accent-line"></div>
+  </header>
+
+  <main>
+
+    <!-- ===== PRIORIDADE MÁXIMA ===== -->
+    <section>
+      <h2 class="section-title">Prioridade Máxima</h2>
+      <div class="card priority">
+        <p class="eyebrow">A única coisa que preciso fazer hoje para avançar</p>
+        <h3>Concluir o próximo módulo do curso de Claude</h3>
+        <p class="note">Edita esta linha todos os dias.</p>
+      </div>
+    </section>
+
+    <!-- ===== METAS DO DIA ===== -->
+    <section>
+      <h2 class="section-title">Metas do Dia</h2>
+      <div class="card">
+        <ul class="checklist">
+          <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Alimentação saudável</span></label></li>
+          <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Estudar Claude (Code, Design, Cowork)</span></label></li>
+          <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Estudar Tráfego Pago</span></label></li>
+          <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Treino físico</span></label></li>
+          <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Leitura</span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== CURSOS EM ANDAMENTO ===== -->
+    <section id="cursos">
+      <h2 class="section-title">Cursos em andamento</h2>
+      <div class="grid-2">
+
+        <article class="card course">
+          <h3>Claude — Domínio Completo</h3>
+          <p class="author">Curso online</p>
+          <div class="progress-head"><span>Progresso</span><strong>30%</strong></div>
+          <div class="bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso Claude"><span style="--value:30%"></span></div>
+          <ul class="modules">
+            <li class="done"><a href="#mod-c1">Módulo 1 — Fundamentos</a></li>
+            <li class="done"><a href="#mod-c2">Módulo 2 — Prompts eficazes</a></li>
+            <li><a href="#mod-c3">Módulo 3 — Claude Code</a></li>
+            <li><a href="#mod-c4">Módulo 4 — Claude Design</a></li>
+            <li><a href="#mod-c5">Módulo 5 — Cowork</a></li>
+          </ul>
+          <a href="#" class="btn">Continuar Estudo</a>
+        </article>
+
+        <article class="card course">
+          <h3>Gestor de Tráfego — Wesley Serute</h3>
+          <p class="author">Wesley Serute</p>
+          <div class="progress-head"><span>Progresso</span><strong>35%</strong></div>
+          <div class="bar" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso de Tráfego"><span style="--value:35%"></span></div>
+          <ul class="modules">
+            <li class="done"><a href="#mod-t1">Módulo 1 — Introdução ao tráfego pago</a></li>
+            <li class="done"><a href="#mod-t2">Módulo 2 — Estrutura de campanhas</a></li>
+            <li><a href="#mod-t3">Módulo 3 — Criativos e copy</a></li>
+            <li><a href="#mod-t4">Módulo 4 — Otimização e escala</a></li>
+            <li><a href="#mod-t5">Módulo 5 — Métricas e relatórios</a></li>
+          </ul>
+          <a href="#" class="btn">Continuar Estudo</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ===== PROGRESSO DOS CURSOS ===== -->
+    <section>
+      <h2 class="section-title">Progresso dos Cursos</h2>
+      <div class="card">
+        <div class="progress-list">
+          <div><div class="progress-head"><span>Claude Code</span><strong>40%</strong></div><div class="bar"><span style="--value:40%"></span></div></div>
+          <div><div class="progress-head"><span>Claude Design</span><strong>20%</strong></div><div class="bar"><span style="--value:20%"></span></div></div>
+          <div><div class="progress-head"><span>Cowork</span><strong>10%</strong></div><div class="bar"><span style="--value:10%"></span></div></div>
+          <div><div class="progress-head"><span>Tráfego Pago</span><strong>35%</strong></div><div class="bar"><span style="--value:35%"></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MINI DASHBOARD ===== -->
+    <section>
+      <h2 class="section-title">Mini Dashboard</h2>
+      <div class="stats">
+        <div class="card stat"><div class="num">0 / 5</div><div class="desc">Tarefas concluídas hoje</div></div>
+        <div class="card stat"><div class="num">1</div><div class="desc">Dias consecutivos produtivos</div></div>
+        <div class="card stat"><div class="num">0h</div><div class="desc">Horas estudadas esta semana</div></div>
+      </div>
+    </section>
+
+    <!-- ===== ROTINA MANHÃ / NOITE ===== -->
+    <section>
+      <h2 class="section-title">Rotina da Manhã &amp; Noite</h2>
+      <div class="grid-2">
+        <div class="card routine">
+          <h3>Manhã</h3>
+          <ul class="checklist">
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Beber água</span></label></li>
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Arrumar a cama</span></label></li>
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Leitura</span></label></li>
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Treino</span></label></li>
+          </ul>
+        </div>
+        <div class="card routine">
+          <h3>Noite</h3>
+          <ul class="checklist">
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Desligar ecrãs</span></label></li>
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Planeamento do dia seguinte</span></label></li>
+            <li><label class="check"><input type="checkbox"><span class="box"></span><span class="label">Meditação</span></label></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HÁBITOS ESSENCIAIS ===== -->
+    <section>
+      <h2 class="section-title">Hábitos essenciais</h2>
+      <div class="habits">
+
+        <div class="card habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 4.5 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 2.5-6.5 6-11z"/></svg>
+          <p>Água</p>
+        </div>
+        <div class="card habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+          <p>Sono</p>
+        </div>
+        <div class="card habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="2.2"/><path d="M12 9v4m-6 6c1-3 3.5-5 6-5s5 2 6 5M7 19h10"/></svg>
+          <p>Meditação</p>
+        </div>
+        <div class="card habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9l1.5 1.5L12 8m-4 7l1.5 1.5L12 14m3-5h2m-2 6h2"/></svg>
+          <p>Organização</p>
+        </div>
+        <div class="card habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+          <p>Foco profundo</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== MOTIVAÇÃO DIÁRIA ===== -->
+    <section>
+      <h2 class="section-title">Motivação diária</h2>
+      <div class="quote">
+        <!-- Troca a frase e o autor todos os dias aqui -->
+        <blockquote>“Somos o que fazemos repetidamente. A excelência, então, não é um ato, mas um hábito.”</blockquote>
+        <cite>— Will Durant</cite>
+      </div>
+    </section>
+
+    <!-- ===== VITÓRIAS DO DIA ===== -->
+    <section>
+      <h2 class="section-title">Vitórias do Dia</h2>
+      <div class="wins">
+        <div class="card"><h3>O que fiz bem</h3><textarea class="write" rows="3" placeholder="Escreve aqui…" aria-label="Escrever"></textarea></div>
+        <div class="card"><h3>O que aprendi</h3><textarea class="write" rows="3" placeholder="Escreve aqui…" aria-label="Escrever"></textarea></div>
+        <div class="card"><h3>O que vou melhorar amanhã</h3><textarea class="write" rows="3" placeholder="Escreve aqui…" aria-label="Escrever"></textarea></div>
+      </div>
+    </section>
+
+    <!-- ===== POP-UPS: CONTEÚDO PROGRAMÁTICO (edita as aulas aqui) ===== -->
+    <div class="modal" id="mod-c1" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Claude — Domínio Completo</p>
+        <h3>Módulo 1 — Fundamentos</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>O que é o Claude e como funciona</li><li>Modelos e planos disponíveis</li><li>Interface e primeiros passos</li><li>Boas práticas de segurança</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-c2" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Claude — Domínio Completo</p>
+        <h3>Módulo 2 — Prompts eficazes</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Estrutura de um bom prompt</li><li>Contexto, exemplos e formato de saída</li><li>Iteração e refinamento</li><li>Prompts reutilizáveis</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-c3" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Claude — Domínio Completo</p>
+        <h3>Módulo 3 — Claude Code</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Instalação e configuração</li><li>Ficheiro CLAUDE.md e contexto do projeto</li><li>Editar, testar e depurar código</li><li>Fluxos de trabalho com agentes</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-c4" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Claude — Domínio Completo</p>
+        <h3>Módulo 4 — Claude Design</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Criar interfaces e protótipos</li><li>Sistemas de design e paletas</li><li>Do conceito ao HTML/CSS</li><li>Revisão e iteração visual</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-c5" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Claude — Domínio Completo</p>
+        <h3>Módulo 5 — Cowork</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Visão geral do Cowork</li><li>Automatizar tarefas do dia a dia</li><li>Trabalhar com ficheiros e documentos</li><li>Projeto final integrado</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-t1" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Gestor de Tráfego — Wesley Serute</p>
+        <h3>Módulo 1 — Introdução ao tráfego pago</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Como funciona o leilão de anúncios</li><li>Plataformas: Meta Ads e Google Ads</li><li>Funil de vendas e objetivos</li><li>Configuração de conta e pixel</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-t2" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Gestor de Tráfego — Wesley Serute</p>
+        <h3>Módulo 2 — Estrutura de campanhas</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Campanha, conjunto e anúncio</li><li>Públicos: frios, mornos e quentes</li><li>Orçamento e lances</li><li>Testes A/B</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-t3" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Gestor de Tráfego — Wesley Serute</p>
+        <h3>Módulo 3 — Criativos e copy</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Ganchos e promessas</li><li>Escrita persuasiva para anúncios</li><li>Vídeo vs. imagem</li><li>Biblioteca de criativos</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-t4" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Gestor de Tráfego — Wesley Serute</p>
+        <h3>Módulo 4 — Otimização e escala</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>Quando pausar e quando escalar</li><li>Escala vertical e horizontal</li><li>Remarketing</li><li>Resolução de problemas comuns</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+    <div class="modal" id="mod-t5" role="dialog" aria-modal="true" aria-label="Conteúdo programático">
+      <a class="backdrop" href="#cursos" aria-label="Fechar"></a>
+      <div class="dialog">
+        <a class="close" href="#cursos" aria-label="Fechar">✕</a>
+        <p class="eyebrow">Gestor de Tráfego — Wesley Serute</p>
+        <h3>Módulo 5 — Métricas e relatórios</h3>
+        <p class="sub">Conteúdo programático</p>
+        <ol><li>CPC, CTR, CPA e ROAS</li><li>Leitura de dashboards</li><li>Relatórios para clientes</li><li>Plano de ação mensal</li></ol>
+        <a href="#cursos" class="btn">Fechar</a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>Criado por Cedrick — Evoluir todos os dias</footer>
+
+</div>
+</body>
+</html>
