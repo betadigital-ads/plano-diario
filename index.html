@@ -6,36 +6,43 @@
 <title>Rotina Diária do Cedrick</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Gloock&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;700;800&display=swap" rel="stylesheet">
 
 <style>
 /* ==========================================================
    1. VARIÁVEIS — edita aqui cores, fontes e espaçamentos
    ========================================================== */
 :root {
-  /* Paleta: #051F20 · #0B2B26 · #163832 · #235347 · #8EB69B · #DAF1DE */
-  --bg:        #051F20;
+  /* Paleta (da imagem de referência): #030807 · #0A2A21 · #1F7A5C · #A8EBC8 · #E6FAEF · #8FA89C */
+  --bg:        #030807;
   --page-bg:
-    radial-gradient(900px 600px at 85% -5%, rgba(35,83,71,.75), transparent 60%),
-    radial-gradient(800px 700px at -10% 45%, rgba(22,56,50,.9), transparent 60%),
-    linear-gradient(170deg, #0B2B26 0%, #051F20 70%);
-  --surface:   rgba(218, 241, 222, .055);
-  --surface-2: rgba(218, 241, 222, .10);
-  --text:      #DAF1DE;
-  --muted:     #8EB69B;
-  --line:      rgba(142, 182, 155, .18);
-  --accent:      #8EB69B;
-  --accent-soft: rgba(142, 182, 155, .45);
-  --accent-bg:   rgba(142, 182, 155, .10);
-  --on-accent:   #051F20;
-  --btn-bg:    linear-gradient(135deg, #DAF1DE, #8EB69B);
-  --btn-text:  #051F20;
-  --shadow:    0 10px 36px rgba(0, 0, 0, .35);
-  --shadow-hover: 0 16px 44px rgba(0, 0, 0, .5);
+    radial-gradient(900px 600px at 85% -5%, rgba(31,122,92,.55), transparent 60%),
+    radial-gradient(800px 700px at -10% 45%, rgba(10,42,33,.9), transparent 60%),
+    radial-gradient(900px 700px at 105% 105%, rgba(110,130,122,.40), transparent 60%),
+    linear-gradient(160deg, #030807 0%, #071c16 55%, #0A2A21 100%);
+  --surface:   rgba(230, 250, 239, .04);
+  --surface-2: rgba(230, 250, 239, .08);
+  --text:      #E6FAEF;
+  --muted:     #8FA89C;
+  --line:      rgba(168, 235, 200, .16);
+  --accent:      #A8EBC8;
+  --accent-soft: rgba(168, 235, 200, .42);
+  --accent-bg:   rgba(31, 122, 92, .14);
+  --accent-glow: rgba(168, 235, 200, .16);
+  --on-accent:   #030807;
+  --btn-bg:    transparent;
+  --btn-text:  #A8EBC8;
+  --glow-line: #A8EBC8;
+  --glow-color: rgba(168, 235, 200, .75);
+  --light-blob: rgba(31, 122, 92, .5);
+  --overlay:   rgba(3, 8, 7, .7);
+  --shadow:    0 10px 36px rgba(0, 0, 0, .4);
+  --shadow-hover: 0 16px 44px rgba(0, 0, 0, .55);
 
-  --font-h1:  "Gloock", "Bodoni Moda", Georgia, serif;           /* títulos principais */
-  --serif:    "Fraunces", Georgia, "Times New Roman", serif;      /* H2 / secções */
-  --sans:     "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* Uma só família em toda a página: Manrope */
+  --font-h1:  "Manrope", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;   /* títulos principais */
+  --serif:    "Manrope", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;   /* H2 / secções */
+  --sans:     "Manrope", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
   --radius: 24px;
   --space-section: clamp(3.5rem, 8vw, 6rem);
@@ -43,23 +50,28 @@
 
 /* Modo claro (interruptor no topo, sem JavaScript) */
 html:has(#tema:checked) {
-  --bg:        #DAF1DE;
+  --bg:        #E6FAEF;
   --page-bg:
-    radial-gradient(900px 600px at 85% -5%, rgba(142,182,155,.7), transparent 60%),
-    linear-gradient(170deg, #DAF1DE 0%, #c4e3cb 100%);
-  --surface:   rgba(255, 255, 255, .55);
-  --surface-2: rgba(35, 83, 71, .10);
-  --text:      #051F20;
-  --muted:     #235347;
-  --line:      rgba(35, 83, 71, .2);
-  --accent:      #235347;
-  --accent-soft: rgba(35, 83, 71, .4);
-  --accent-bg:   rgba(142, 182, 155, .28);
-  --on-accent:   #DAF1DE;
-  --btn-bg:    linear-gradient(135deg, #235347, #163832);
-  --btn-text:  #DAF1DE;
-  --shadow:    0 10px 36px rgba(5, 31, 32, .10);
-  --shadow-hover: 0 16px 44px rgba(5, 31, 32, .18);
+    radial-gradient(900px 600px at 85% -5%, rgba(168,235,200,.8), transparent 60%),
+    linear-gradient(160deg, #E6FAEF 0%, #cdeedb 100%);
+  --surface:   rgba(255, 255, 255, .6);
+  --surface-2: rgba(10, 42, 33, .08);
+  --text:      #030807;
+  --muted:     #1F5F48;
+  --line:      rgba(10, 42, 33, .18);
+  --accent:      #1F7A5C;
+  --accent-soft: rgba(31, 122, 92, .45);
+  --accent-bg:   rgba(168, 235, 200, .35);
+  --accent-glow: rgba(31, 122, 92, .15);
+  --on-accent:   #E6FAEF;
+  --btn-bg:    transparent;
+  --btn-text:  #0A2A21;
+  --glow-line: #1F7A5C;
+  --glow-color: rgba(31, 122, 92, .55);
+  --light-blob: rgba(168, 235, 200, .7);
+  --overlay:   rgba(230, 250, 239, .7);
+  --shadow:    0 10px 36px rgba(3, 8, 7, .10);
+  --shadow-hover: 0 16px 44px rgba(3, 8, 7, .18);
 }
 
 /* ==========================================================
@@ -75,6 +87,7 @@ body {
   font-family: var(--sans);
   font-weight: 300;
   line-height: 1.7;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   transition: background .4s, color .4s;
 }
@@ -144,9 +157,9 @@ html:has(#tema:checked) .toggle-label::before { content: "Modo escuro"; }
 
 header h1 {
   font-family: var(--font-h1);
-  font-weight: 400;
-  font-size: clamp(2.2rem, 6vw, 3.8rem);
-  letter-spacing: .01em;
+  font-weight: 200;
+  font-size: clamp(2.4rem, 7vw, 4.6rem);
+  letter-spacing: -.02em;
   line-height: 1.2;
   margin-top: 1rem;
 }
@@ -246,14 +259,15 @@ header .accent-line {
 
 .btn {
   display: inline-flex; align-items: center; gap: 1.2rem; text-decoration: none;
-  font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 500;
+  font-size: .8rem; letter-spacing: .08em; font-weight: 400;
   color: var(--btn-text); background: var(--btn-bg);
-  padding: .95rem 1.9rem; border-radius: 999px;
-  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  border: 1px solid var(--accent-soft);
+  padding: .8rem 1.7rem; border-radius: 999px;
   transition: all .3s ease;
 }
 .btn::after { content: "→"; font-size: 1.1em; transition: transform .3s; }
-.btn:hover, .btn:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.35); }
+.btn:hover, .btn:focus-visible { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 0 24px var(--accent-glow), inset 0 0 12px var(--accent-glow); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .btn:hover::after { transform: translateX(4px); }
 
 /* ==========================================================
@@ -265,7 +279,7 @@ header .accent-line {
 
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
 .stat { text-align: center; padding: 2.2rem 1.2rem; }
-.stat .num { font-family: var(--font-h1); font-size: clamp(2.2rem, 5vw, 3rem); color: var(--accent); line-height: 1; }
+.stat .num { font-family: var(--font-h1); font-weight: 200; font-size: clamp(2.2rem, 5vw, 3rem); color: var(--accent); line-height: 1; }
 .stat .desc { margin-top: .8rem; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 
 /* ==========================================================
@@ -350,7 +364,7 @@ footer {
   transition: opacity .35s ease, visibility 0s linear .35s;
 }
 .modal:target { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
-.modal .backdrop { position: absolute; inset: 0; background: rgba(5, 31, 32, .65); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.modal .backdrop { position: absolute; inset: 0; background: var(--overlay); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .dialog {
   position: relative; width: min(520px, 100%); max-height: 90vh; overflow-y: auto;
   background: var(--bg); background-image: var(--page-bg);
@@ -387,11 +401,32 @@ header .accent-line { animation: grow 1.2s cubic-bezier(.2,.8,.2,1) .7s both; }
 /* Luzes suaves em movimento no fundo */
 body::before, body::after {
   content: ""; position: fixed; z-index: -1; border-radius: 50%; filter: blur(90px); pointer-events: none;
-  background: radial-gradient(circle, rgba(35,83,71,.55), transparent 70%);
+  background: radial-gradient(circle, var(--light-blob), transparent 70%);
   animation: drift 18s ease-in-out infinite;
 }
 body::before { width: 520px; height: 520px; top: 8%; left: -8%; }
 body::after  { width: 440px; height: 440px; bottom: 5%; right: -6%; animation-delay: -9s; }
+
+/* Linha luminosa do header (traço desenhado uma vez ao carregar) */
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.glow-line { margin: 2.5rem calc(50% - 50vw) 0; height: clamp(70px, 14vw, 150px); padding-block: 20px; box-sizing: content-box; overflow-x: clip; overflow-y: visible; }
+.glow-line svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.glow-line path {
+  fill: none; stroke: var(--glow-line); stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 1 2; stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 6px var(--glow-color)) drop-shadow(0 0 18px var(--glow-color));
+  animation: draw 2.4s cubic-bezier(.2,.8,.2,1) .6s both;
+}
+.glow-line circle { fill: var(--glow-line); filter: drop-shadow(0 0 10px var(--glow-color)); animation: rise 1s ease 1.8s both; }
+
+/* Tema claro: pesos um pouco mais firmes para manter a leitura */
+html:has(#tema:checked) header h1, html:has(#tema:checked) .stat .num { font-weight: 300; }
+
+/* Grão subtil por cima do fundo, como na imagem de referência */
+html::after {
+  content: ""; position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
 /* Revelação ao fazer scroll (usa translate/opacity para não bloquear o hover) */
 @supports (animation-timeline: view()) {
@@ -412,7 +447,7 @@ body::after  { width: 440px; height: 440px; bottom: 5%; right: -6%; animation-de
 }
 
 /* Interações extra */
-.check input:checked + .box { box-shadow: 0 0 0 6px rgba(142,182,155,.15); }
+.check input:checked + .box { box-shadow: 0 0 0 6px var(--accent-glow); }
 .stat .num { transition: transform .4s ease; }
 .stat:hover .num { transform: scale(1.06); }
 
@@ -434,6 +469,13 @@ body::after  { width: 440px; height: 440px; bottom: 5%; right: -6%; animation-de
     <h1>Rotina Diária do Cedrick</h1>
     <p class="subtitle">Foco, disciplina e evolução constante</p>
     <div class="accent-line"></div>
+    <!-- Linha luminosa decorativa (SVG inline, animada só com CSS) -->
+    <div class="glow-line" aria-hidden="true">
+      <svg viewBox="0 0 1000 160" preserveAspectRatio="none">
+        <path pathLength="1" d="M0 120 C120 150 200 150 290 100 S440 40 520 80 S690 140 780 70 S920 10 1000 20"/>
+        <circle cx="520" cy="80" r="9"/>
+      </svg>
+    </div>
   </header>
 
   <main>

@@ -11,7 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Apenas HTML + CSS puros. **Sem JavaScript e sem frameworks.** Toda a interatividade tem de ser feita em CSS.
 - Estética minimalista premium: espaçamento amplo, linhas finas, sombras suaves, animações leves de hover.
 - Tudo deve continuar fácil de editar à mão: manter os comentários de secção e as variáveis CSS.
-- O brief original pedia paleta branco/cinza/dourado, mas a página implementada usa uma **paleta verde** (`#051F20 → #DAF1DE`, referência em `palete_planner.jpg`). `design.jpg`, `H1.png` e `H2.png` são referências visuais. Seguir a paleta verde atual, não o dourado do brief.
+- O brief original pedia paleta branco/cinza/dourado, mas a página usa agora a **paleta da imagem Velovis**: preto-esverdeado `#030807`, verde profundo `#0A2A21`, esmeralda `#1F7A5C`, menta `#A8EBC8`, texto `#E6FAEF`, cinza-verde `#8FA89C`. Fonte única: **Manrope** (200–800) em toda a página; corpo em 300, negrito mantido onde já existe. Seguir esta paleta, não o dourado do brief.
+- Efeitos da referência, só em CSS/SVG inline: grão (`html::after`) e linha luminosa no header (`.glow-line`, cores via `--glow-line`/`--glow-color`).
 
 ## Arquitetura de [index.html](index.html)
 
