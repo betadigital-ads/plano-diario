@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plano Diário – Cedrick</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital@1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0D1B2A;
+      --deep: #1B263B;
+      --steel: #415A77;
+      --sage: #778D7A;
+      --sand: #D4C4A8;
+      --cream: #F4F1DE;
+      --r-card: 28px;
+      --r-day: 18px;
+      --r-pill: 999px;
+      --font: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+      --serif: "Lora", Georgia, serif;
+    }
+
+    /* Escuro (padrão) */
+    [data-theme="dark"] {
+      --glass: rgba(13, 27, 42, 0.55);
+      --glass-strong: rgba(27, 38, 59, 0.7);
+      --glass-border: rgba(244, 241, 222, 0.16);
+      --text-main: #F4F1DE;
+      --text-muted: #b9c2b8;
+      --accent: #D4C4A8;
+      --accent-ink: #0D1B2A;
+      --accent-soft: rgba(212, 196, 168, 0.16);
+      --track: rgba(244, 241, 222, 0.14);
+      --overlay: rgba(13, 27, 42, 0.72);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Claro */
+    [data-theme="light"] {
+      --glass: rgba(244, 241, 222, 0.85);
+      --glass-strong: rgba(244, 241, 222, 0.88);
+      --glass-border: rgba(13, 27, 42, 0.14);
+      --text-main: #101010;
+      --text-muted: #1f3447;
+      --accent: #0D1B2A;
+      --accent-ink: #F4F1DE;
+      --accent-soft: rgba(65, 90, 119, 0.16);
+      --track: rgba(13, 27, 42, 0.13);
+      --overlay: rgba(13, 27, 42, 0.38);
+      --shadow: 0 24px 60px rgba(13, 27, 42, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.5;
+      background: var(--ink) url("fundo-aurora.jpg") center / cover fixed no-repeat;
+      color: var(--text-main);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* camada que integra a aurora na paleta Holst */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(900px 600px at 85% 10%, rgba(119, 141, 122, 0.28), transparent 65%),
+        linear-gradient(160deg, var(--overlay), rgba(13, 27, 42, 0.9));
+      z-index: 0;
+      pointer-events: none;
+      transition: background 0.4s;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--sage);
+      outline-offset: 2px;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      min-height: 100vh;
+      padding: 12px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ---------- vidro ---------- */
+    .sidebar,
+    header,
+    .content,
+    .card,
+    .plan-column {
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(20px) saturate(1.2);
+      backdrop-filter: blur(20px) saturate(1.2);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+    }
+
+    /* ---------- SIDEBAR ---------- */
+    .sidebar {
+      width: 100%;
+      flex-shrink: 0;
+      border-radius: var(--r-card);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar-header { display: flex; align-items: center; justify-content: space-between; }
+
+    .sidebar-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .sidebar-toggle {
+      display: inline-flex;
+      border: 1px solid var(--glass-border);
+      background: var(--accent-soft);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--r-pill);
+      font: 600 0.85rem var(--font);
+      cursor: pointer;
+    }
+
+    .sidebar-nav { margin-top: 4px; display: none; flex-direction: column; gap: 6px; }
+    .sidebar-nav.open { display: flex; }
+
+    .sidebar-link {
+      padding: 11px 16px;
+      border-radius: var(--r-pill);
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .sidebar-link:hover { background: var(--accent-soft); color: var(--text-main); }
+
+    .sidebar-link.active {
+      background: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .sidebar-footer {
+      display: none;
+      margin-top: auto;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ---------- MAIN ---------- */
+    .layout-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+
+    header {
+      border-radius: var(--r-card);
+      padding: 22px 20px;
+    }
+
+    header > div:first-child { flex-wrap: wrap; justify-content: space-between; align-items: flex-start !important; }
+
+    header h1 {
+      font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    header h1 .h1-top { display: block; font-size: 0.55em; letter-spacing: -0.035em; margin-bottom: 0.2em; }
+
+    header p {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 52ch;
+    }
+
+    .header-meta { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .pill,
+    .mode-toggle {
+      padding: 8px 16px;
+      border-radius: var(--r-pill);
+      border: 1px solid var(--glass-border);
+      background: var(--accent-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .pill span { color: inherit; font-size: inherit; }
+
+    .mode-toggle {
+      cursor: pointer;
+      user-select: none;
+      background: var(--accent);
+      color: var(--accent-ink);
+      transition: transform 0.15s;
+    }
+    .mode-toggle span { color: inherit; }
+    .mode-toggle:active { transform: scale(0.96); }
+
+    .content {
+      border-radius: var(--r-card);
+      padding: 14px;
+    }
+
+    /* ---------- CARTÕES ---------- */
+    .dashboard-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--glass-strong);
+      border-radius: var(--r-card);
+      padding: 18px;
+      box-shadow: none;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      max-width: 60ch;
+    }
+
+    .progress-summary { display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; }
+
+    .progress-bar-bg,
+    .goal-bar-bg {
+      width: 100%;
+      height: 22px;
+      border-radius: var(--r-pill);
+      background: var(--track);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--r-pill);
+      background: linear-gradient(90deg, var(--steel), var(--sage) 60%, var(--sand));
+      transition: width 0.5s ease;
+    }
+
+    .goal-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--r-pill);
+      background: var(--sage);
+      transition: width 0.5s ease;
+    }
+    #goal-1 { background: var(--steel); }
+    #goal-2 { background: var(--sage); }
+    #goal-3 { background: var(--sand); }
+
+    #progress-percent { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.04em; color: var(--text-main); }
+
+    .level-badge {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 8px 16px;
+      border-radius: var(--r-pill);
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .stat-item {
+      padding: 14px 16px;
+      border-radius: var(--r-day);
+      background: var(--accent-soft);
+      border: 1px solid var(--glass-border);
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); line-height: 1.3; }
+    .stat-value { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-main); }
+
+    .notifications { display: flex; flex-direction: column; gap: 8px; }
+
+    .notification-item {
+      padding: 12px 16px;
+      border-radius: var(--r-day);
+      background: var(--accent-soft);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    /* gráfico: pílulas verticais nas cores Holst */
+    .chart {
+      margin-top: 18px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 140px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      height: 100%;
+      background: var(--track);
+      border-radius: var(--r-pill);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-bar-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      border-radius: var(--r-pill);
+      transition: height 0.5s ease;
+    }
+    #chart-bar-1 { background: var(--steel); }
+    #chart-bar-2 { background: var(--sage); }
+    #chart-bar-3 { background: var(--sand); }
+
+    .chart-bar-label {
+      flex: 1;
+      font-size: 0.78rem;
+      text-align: center;
+      margin-top: 8px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* metas */
+    .goals-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 8px; }
+    .goal-label { font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+
+    /* calendário */
+    .calendar-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+      gap: 8px;
+    }
+
+    .calendar-day {
+      padding: 14px 0;
+      border-radius: var(--r-pill);
+      text-align: center;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .calendar-day.done-claude { background: var(--sage); color: var(--ink); border-color: var(--sage); font-weight: 800; }
+    .calendar-day.done-trafego { background: var(--sand); color: var(--ink); border-color: var(--sand); font-weight: 800; }
+    .calendar-day.done-claude.done-trafego { background: linear-gradient(135deg, var(--sage) 50%, var(--sand) 50%); border-color: var(--sage); }
+    .calendar-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 0.85rem; color: var(--text-muted); }
+    .calendar-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+    .calendar-day.completed {
+      background: var(--sage);
+      color: var(--ink);
+      border-color: var(--sage);
+      font-weight: 800;
+    }
+
+    /* notas */
+    .notes-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 8px; }
+    .notes-block-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      border-radius: var(--r-day);
+      border: 1px solid var(--glass-border);
+      padding: 14px 16px;
+      font: 400 0.95rem/1.55 var(--font);
+      resize: vertical;
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+    textarea::placeholder { color: var(--text-muted); }
+    textarea:focus { outline: none; border-color: var(--sage); box-shadow: 0 0 0 3px rgba(119, 141, 122, 0.35); }
+
+    /* planner */
+    .plans-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+
+    .plan-column {
+      background: var(--glass-strong);
+      border-radius: var(--r-card);
+      padding: 16px;
+      box-shadow: none;
+    }
+
+    .plan-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; margin-bottom: 14px; }
+    .plan-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+    .plan-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+
+    .accordion {
+      margin-bottom: 12px;
+      border-radius: var(--r-day);
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      background: var(--accent-soft);
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-main);
+      user-select: none;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+    .accordion-header:hover { background: var(--glass-border); }
+
+    .accordion-content { display: none; padding: 12px; }
+
+    .day-card {
+      border-radius: var(--r-day);
+      border: 1px solid var(--glass-border);
+      background: var(--accent-soft);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .day-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .day-label { font-size: 0.9rem; font-weight: 700; }
+
+    .day-time {
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--accent-ink);
+      padding: 4px 10px;
+      border-radius: var(--r-pill);
+      white-space: nowrap;
+    }
+
+    .tasks { list-style: none; }
+
+    .tasks li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      padding: 4px 0;
+    }
+
+    .tasks input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--sage);
+      cursor: pointer;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ---------- RESPONSIVO ---------- */
+    @media (min-width: 901px) {
+      .layout { flex-direction: row; padding: 20px; gap: 20px; }
+      .sidebar { width: 240px; padding: 22px 16px; gap: 16px; position: sticky; top: 20px; height: calc(100vh - 40px); overflow-y: auto; }
+      .sidebar-toggle { display: none; }
+      .sidebar-nav { display: flex; }
+      .sidebar-footer { display: block; }
+      .layout-main { gap: 20px; }
+      header { padding: 30px 32px 28px; }
+      .content { padding: 24px; }
+      .card { padding: 24px; }
+      .plan-column { padding: 22px; }
+      .dashboard-top { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; }
+      .plans-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 20px; }
+      .notes-grid { grid-template-columns: 1fr 1fr; }
+      .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    [data-theme="light"] :focus-visible { outline-color: var(--ink); }
+    header > div:first-child > div:first-child { flex: 1 1 320px; min-width: 0; }
+    .mode-toggle { margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+    .accordion-header:focus-visible { outline-offset: -3px; }
+    .tasks span { min-width: 0; overflow-wrap: anywhere; }
+    .day-header { flex-wrap: wrap; }
+    .day-label { min-width: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Cedrick Dashboard</div>
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-expanded="false" aria-controls="sidebar-nav">Menu</button>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <a class="sidebar-link active" href="#" data-section="dashboard">Dashboard</a>
+        <a class="sidebar-link" href="#" data-section="planner">Planner</a>
+        <a class="sidebar-link" href="#" data-section="metas">Metas</a>
+        <a class="sidebar-link" href="#" data-section="calendario">Calendário</a>
+        <a class="sidebar-link" href="#" data-section="notas">Notas</a>
+      </nav>
+      <div class="sidebar-footer">
+        Foco diário: Claude + Tráfego Pago
+      </div>
+    </aside>
+
+    <main class="layout-main">
+      <header>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div>
+            <h1><span class="h1-top">Plano Diário</span>Claude + Tráfego Pago</h1>
+            <p>Dashboard completo com progresso, metas, calendário, notas e gamificação.</p>
+          </div>
+          <div class="mode-toggle" id="mode-toggle" role="button" tabindex="0" aria-label="Alternar modo claro/escuro">
+            <span>Modo</span>
+            <span id="mode-label">Escuro</span>
+          </div>
+        </div>
+        <div class="header-meta">
+          <div class="pill"><span>Claude – 30 dias (Code, Design, Cowork)</span></div>
+          <div class="pill"><span>Tráfego Pago – 20 dias</span></div>
+          <div class="pill"><span>Rotina diária: ~1.5h–2h</span></div>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- DASHBOARD SECTION -->
+        <section id="section-dashboard">
+          <div class="dashboard-top">
+            <div class="card">
+              <div class="card-title">Resumo de Progresso</div>
+              <div class="card-subtitle">Tarefas concluídas, percentagem e nível atual.</div>
+              <div class="progress-summary">
+                <div>
+                  <span>Total: </span><strong><span id="total-count">0</span></strong> tarefas<br />
+                  <span>Concluídas: </span><strong><span id="completed-count">0</span></strong> tarefas
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="progress-bar"></div>
+                </div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
+                  <span id="progress-percent">0%</span> concluído
+                </div>
+                <div class="level-badge">
+                  Nível atual: <span id="level-label">Aprendiz</span>
+                </div>
+              </div>
+              <div class="stats-grid">
+                <div class="stat-item"><div class="stat-label">Streak Claude</div><div class="stat-value" id="streak-claude">0</div></div>
+                <div class="stat-item"><div class="stat-label">Streak Tráfego</div><div class="stat-value" id="streak-trafego">0</div></div>
+                <div class="stat-item"><div class="stat-label">Dias Claude (de 30)</div><div class="stat-value" id="days-claude">0</div></div>
+                <div class="stat-item"><div class="stat-label">Dias Tráfego (de 20)</div><div class="stat-value" id="days-trafego">0</div></div>
+                <div class="stat-item"><div class="stat-label">Tarefas hoje</div><div class="stat-value" id="tasks-today">0</div></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Notificações & Gráfico</div>
+              <div class="card-subtitle">Mensagens automáticas e visualização simples de progresso.</div>
+              <div class="notifications" id="notifications">
+                <div class="notification-item" id="notif-main">
+                  Ainda não há progresso suficiente para gerar notificações.
+                </div>
+              </div>
+              <div class="chart" id="chart">
+                <div class="chart-bar">
+                  <div class="chart-bar-fill" id="chart-bar-1"></div>
+                </div>
+                <div class="chart-bar">
+                  <div class="chart-bar-fill" id="chart-bar-2"></div>
+                </div>
+                <div class="chart-bar">
+                  <div class="chart-bar-fill" id="chart-bar-3"></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:10px;margin-top:4px;">
+                <div class="chart-bar-label">Claude Code</div>
+                <div class="chart-bar-label">Claude Design</div>
+                <div class="chart-bar-label">Cowork + Tráfego</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PLANNER SECTION -->
+        <section id="section-planner" style="display:none;">
+          <div class="card">
+            <div class="card-title">Planner Diário</div>
+            <div class="card-subtitle">Claude + Tráfego Pago com checkboxes e progresso automático.</div>
+          </div>
+          <div class="plans-grid">
+            <!-- COLUNA CLAUDE -->
+            <div class="plan-column">
+              <div class="plan-header">
+                <div class="plan-title">Plano Claude – 30 dias</div>
+                <div class="plan-subtitle">Horário: 19:00–19:50</div>
+              </div>
+
+              <div class="accordion">
+                <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">Claude Code – Dias 1 a 12</div>
+                <div class="accordion-content" id="claude-code"></div>
+              </div>
+
+              <div class="accordion">
+                <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">Claude Design – Dias 13 a 21</div>
+                <div class="accordion-content" id="claude-design"></div>
+              </div>
+
+              <div class="accordion">
+                <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">Claude Cowork – Dias 22 a 30</div>
+                <div class="accordion-content" id="claude-cowork"></div>
+              </div>
+            </div>
+
+            <!-- COLUNA TRÁFEGO -->
+            <div class="plan-column" id="plan-trafego">
+              <div class="plan-header">
+                <div class="plan-title">Plano Tráfego Pago – 20 dias</div>
+                <div class="plan-subtitle">Horário: 20:00–20:45</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- METAS SECTION -->
+        <section id="section-metas" style="display:none;">
+          <div class="card">
+            <div class="card-title">Metas de Estudo</div>
+            <div class="card-subtitle">Metas fixas com barras de progresso baseadas nas tarefas concluídas.</div>
+            <div class="goals-grid">
+              <div class="goal-item">
+                <div class="goal-label">Meta 1: Terminar Claude Code até o Dia 12</div>
+                <div class="goal-bar-bg">
+                  <div class="goal-bar-fill" id="goal-1"></div>
+                </div>
+              </div>
+              <div class="goal-item">
+                <div class="goal-label">Meta 2: Publicar site completo (Claude Design) até o Dia 21</div>
+                <div class="goal-bar-bg">
+                  <div class="goal-bar-fill" id="goal-2"></div>
+                </div>
+              </div>
+              <div class="goal-item">
+                <div class="goal-label">Meta 3: Completar 80% do Tráfego Pago até o Dia 20</div>
+                <div class="goal-bar-bg">
+                  <div class="goal-bar-fill" id="goal-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CALENDÁRIO SECTION -->
+        <section id="section-calendario" style="display:none;">
+          <div class="card">
+            <div class="card-title">Calendário de Estudo (30 dias)</div>
+            <div class="card-subtitle">Dias com pelo menos uma tarefa feita, por plano (Claude e Tráfego Pago).</div>
+            <div class="calendar-grid" id="calendar-grid">
+              <!-- Dias 1 a 30 -->
+            </div>
+            <div class="calendar-legend"><span><i style="background:var(--sage)"></i>Claude</span><span><i style="background:var(--sand)"></i>Tráfego Pago</span></div>
+          </div>
+        </section>
+
+        <!-- NOTAS SECTION -->
+        <section id="section-notas" style="display:none;">
+          <div class="card">
+            <div class="card-title">Notas estilo Notion</div>
+            <div class="card-subtitle">Regista ideias, insights e ajustes para Claude e Tráfego Pago.</div>
+            <div class="notes-grid">
+              <div>
+                <div class="notes-block-title">Notas – Claude (Code, Design, Cowork)</div>
+                <textarea id="notes-claude" placeholder="Escreve aqui as tuas notas sobre Claude..."></textarea>
+              </div>
+              <div>
+                <div class="notes-block-title">Notas – Tráfego Pago</div>
+                <textarea id="notes-trafego" placeholder="Escreve aqui as tuas notas sobre Tráfego Pago..."></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          Plano criado para Cedrick – estudo diário entre 1.5h e 2h
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /* ---------- PLANOS ---------- */
+
+    const claudeCode = [
+      { day: 1, time: "19:00–19:50", tasks: [
+        "Entender fundamentos do Claude Code",
+        "Criar primeiros componentes (botões, cards)"
+      ]},
+      { day: 2, time: "19:00–19:50", tasks: [
+        "HTML + CSS com IA",
+        "Criar estrutura base da página"
+      ]},
+      { day: 3, time: "19:00–19:50", tasks: [
+        "Criar secção HERO",
+        "Criar secção de benefícios"
+      ]},
+      { day: 4, time: "19:00–19:50", tasks: [
+        "Criar secção de pricing",
+        "Criar secção de CTA"
+      ]},
+      { day: 5, time: "19:00–19:50", tasks: [
+        "Criar formulários funcionais",
+        "Validar inputs"
+      ]},
+      { day: 6, time: "19:00–19:50", tasks: [
+        "Criar scripts simples (tabs, sliders, contadores)"
+      ]},
+      { day: 7, time: "19:00–19:50", tasks: [
+        "Montar landing page completa",
+        "Revisar design e copy"
+      ]},
+      { day: 8, time: "19:00–19:50", tasks: [
+        "Criar app financeiro (dashboard simples)"
+      ]},
+      { day: 9, time: "19:00–19:50", tasks: [
+        "Criar app CRM simples"
+      ]},
+      { day: 10, time: "19:00–19:50", tasks: [
+        "Organizar estrutura de projetos (pastas, assets)"
+      ]},
+      { day: 11, time: "19:00–19:50", tasks: [
+        "Deploy no Vercel"
+      ]},
+      { day: 12, time: "19:00–19:50", tasks: [
+        "Deploy no Netlify",
+        "Criar portfólio inicial (3 projetos)"
+      ]}
+    ];
+
+    const claudeDesign = [
+      { day: 13, time: "19:00–19:50", tasks: [
+        "Fundamentos do Claude Design",
+        "Criar layout base"
+      ]},
+      { day: 14, time: "19:00–19:50", tasks: [
+        "Criar sistema de design (cores, tipografia, botões)"
+      ]},
+      { day: 15, time: "19:00–19:50", tasks: [
+        "Criar protótipos clicáveis"
+      ]},
+      { day: 16, time: "19:00–19:50", tasks: [
+        "Criar landing page premium"
+      ]},
+      { day: 17, time: "19:00–19:50", tasks: [
+        "Criar páginas com animações"
+      ]},
+      { day: 18, time: "19:00–19:50", tasks: [
+        "Criar site completo (institucional)"
+      ]},
+      { day: 19, time: "19:00–19:50", tasks: [
+        "Criar página de serviços",
+        "Criar página de contacto"
+      ]},
+      { day: 20, time: "19:00–19:50", tasks: [
+        "Revisar site + otimizar design"
+      ]},
+      { day: 21, time: "19:00–19:50", tasks: [
+        "Publicar site no portfólio"
+      ]}
+    ];
+
+    const claudeCowork = [
+      { day: 22, time: "19:00–19:50", tasks: [
+        "Automação do computador (Cowork)"
+      ]},
+      { day: 23, time: "19:00–19:50", tasks: [
+        "Automação do navegador (Cowork)"
+      ]},
+      { day: 24, time: "19:00–19:50", tasks: [
+        "Criar fluxos simples",
+        "Criar subagentes"
+      ]},
+      { day: 25, time: "19:00–19:50", tasks: [
+        "Criar skill para leads"
+      ]},
+      { day: 26, time: "19:00–19:50", tasks: [
+        "Criar skill para tráfego pago"
+      ]},
+      { day: 27, time: "19:00–19:50", tasks: [
+        "Criar plugin simples"
+      ]},
+      { day: 28, time: "19:00–19:50", tasks: [
+        "Criar automação completa (ex.: relatório diário)"
+      ]},
+      { day: 29, time: "19:00–19:50", tasks: [
+        "Criar página de vendas da tua oferta premium"
+      ]},
+      { day: 30, time: "19:00–19:50", tasks: [
+        "Revisão geral",
+        "Montar portfólio final",
+        "Preparar apresentação para clientes"
+      ]}
+    ];
+
+    const trafegoPlan = [
+      { day: 1, time: "20:00–20:45", tasks: [
+        "Fundamentos do tráfego pago",
+        "Visão geral da BM e pixel"
+      ]},
+      { day: 2, time: "20:00–20:45", tasks: [
+        "Configurações essenciais",
+        "Eventos + verificação"
+      ]},
+      { day: 3, time: "20:00–20:45", tasks: [
+        "Objetivos de campanha",
+        "Quando usar cada objetivo"
+      ]},
+      { day: 4, time: "20:00–20:45", tasks: [
+        "Segmentação básica",
+        "Públicos frios"
+      ]},
+      { day: 5, time: "20:00–20:45", tasks: [
+        "Públicos personalizados (site, engajamento, lista)"
+      ]},
+      { day: 6, time: "20:00–20:45", tasks: [
+        "Públicos semelhantes (LAL)"
+      ]},
+      { day: 7, time: "20:00–20:45", tasks: [
+        "Criativos básicos (imagem + texto)"
+      ]},
+      { day: 8, time: "20:00–20:45", tasks: [
+        "Campanha para negócios locais (lead)",
+        "Criar estrutura completa"
+      ]},
+      { day: 9, time: "20:00–20:45", tasks: [
+        "Criar anúncios para negócios locais",
+        "Criar copy + criativos"
+      ]},
+      { day: 10, time: "20:00–20:45", tasks: [
+        "Métricas importantes (CPL, CTR, CPM)",
+        "Diagnóstico inicial"
+      ]},
+      { day: 11, time: "20:00–20:45", tasks: [
+        "Campanhas para serviços (agendamento)",
+        "Criar estrutura completa"
+      ]},
+      { day: 12, time: "20:00–20:45", tasks: [
+        "Criativos para serviços",
+        "Copywriting para serviços"
+      ]},
+      { day: 13, time: "20:00–20:45", tasks: [
+        "Campanhas para infoprodutos",
+        "Criar estrutura completa"
+      ]},
+      { day: 14, time: "20:00–20:45", tasks: [
+        "Funil de vendas",
+        "Remarketing"
+      ]},
+      { day: 15, time: "20:00–20:45", tasks: [
+        "Criativos que convertem",
+        "Estrutura de anúncio vencedor"
+      ]},
+      { day: 16, time: "20:00–20:45", tasks: [
+        "Testes A/B",
+        "Diagnóstico de campanhas"
+      ]},
+      { day: 17, time: "20:00–20:45", tasks: [
+        "Corrigir campanhas fracas",
+        "Otimização inicial"
+      ]},
+      { day: 18, time: "20:00–20:45", tasks: [
+        "Estratégias de escala",
+        "Orçamento e distribuição"
+      ]},
+      { day: 19, time: "20:00–20:45", tasks: [
+        "Criar pacote de serviços",
+        "Definir preços e modelos de cobrança"
+      ]},
+      { day: 20, time: "20:00–20:45", tasks: [
+        "Criar proposta irresistível",
+        "Preparação para pegar clientes"
+      ]}
+    ];
+
+    const STORAGE_KEY = "cedrick_dashboard_state_v1";
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch {
+        return {};
+      }
+    }
+
+    function saveState(state) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {}
+    }
+
+    function createDayCard(planId, planName, dayObj) {
+      const card = document.createElement("div");
+      card.className = "day-card";
+
+      const header = document.createElement("div");
+      header.className = "day-header";
+
+      const label = document.createElement("div");
+      label.className = "day-label";
+      label.textContent = `Dia ${dayObj.day} – ${planName}`;
+
+      const time = document.createElement("div");
+      time.className = "day-time";
+      time.textContent = dayObj.time;
+
+      header.appendChild(label);
+      header.appendChild(time);
+
+      const ul = document.createElement("ul");
+      ul.className = "tasks";
+
+      dayObj.tasks.forEach((taskText, idx) => {
+        const li = document.createElement("li");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+
+        const taskId = `${planId}-day${dayObj.day}-task${idx}`;
+        checkbox.dataset.taskId = taskId;
+        checkbox.dataset.day = dayObj.day;
+        checkbox.dataset.plan = planId === "trafego" ? "trafego" : "claude";
+
+        const span = document.createElement("span");
+        span.textContent = taskText;
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        ul.appendChild(li);
+      });
+
+      card.appendChild(header);
+      card.appendChild(ul);
+      return card;
+    }
+
+    function renderPlanner() {
+      const state = loadState();
+
+      const codeContainer = document.getElementById("claude-code");
+      claudeCode.forEach(dayObj => {
+        const card = createDayCard("claude-code", "Claude Code", dayObj);
+        codeContainer.appendChild(card);
+      });
+
+      const designContainer = document.getElementById("claude-design");
+      claudeDesign.forEach(dayObj => {
+        const card = createDayCard("claude-design", "Claude Design", dayObj);
+        designContainer.appendChild(card);
+      });
+
+      const coworkContainer = document.getElementById("claude-cowork");
+      claudeCowork.forEach(dayObj => {
+        const card = createDayCard("claude-cowork", "Claude Cowork", dayObj);
+        coworkContainer.appendChild(card);
+      });
+
+      const trafegoContainer = document.getElementById("plan-trafego");
+      trafegoPlan.forEach(dayObj => {
+        const card = createDayCard("trafego", "Tráfego Pago", dayObj);
+        trafegoContainer.appendChild(card);
+      });
+
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      allCheckboxes.forEach(cb => {
+        const id = cb.dataset.taskId;
+        if (state[id] === true) cb.checked = true;
+      });
+
+      updateProgress();
+      attachCheckboxListeners();
+      setupAccordion();
+      renderCalendar();
+      updateGoals();
+      updateChart();
+      updateNotifications();
+    }
+
+    function attachCheckboxListeners() {
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      const state = loadState();
+
+      allCheckboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+          const id = cb.dataset.taskId;
+          state[id] = cb.checked;
+          saveState(state);
+          updateProgress();
+          renderCalendar();
+          updateGoals();
+          updateChart();
+          updateNotifications();
+        });
+      });
+    }
+
+    function updateProgress() {
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      const total = allCheckboxes.length;
+      let completed = 0;
+
+      allCheckboxes.forEach(cb => {
+        if (cb.checked) completed++;
+      });
+
+      const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      document.getElementById("total-count").textContent = total;
+      document.getElementById("completed-count").textContent = completed;
+      document.getElementById("progress-percent").textContent = `${percent}%`;
+      document.getElementById("progress-bar").style.width = `${percent}%`;
+
+      const levelLabel = document.getElementById("level-label");
+      if (percent < 20) levelLabel.textContent = "Aprendiz";
+      else if (percent < 40) levelLabel.textContent = "Operador";
+      else if (percent < 60) levelLabel.textContent = "Criador";
+      else if (percent < 80) levelLabel.textContent = "Gestor";
+      else levelLabel.textContent = "Mestre Claude";
+
+      document.getElementById("days-claude").textContent = daysDone("claude").size;
+      document.getElementById("days-trafego").textContent = daysDone("trafego").size;
+      document.getElementById("streak-claude").textContent = computeStreak("claude");
+      document.getElementById("streak-trafego").textContent = computeStreak("trafego");
+
+      const tasksToday = computeTasksToday();
+      document.getElementById("tasks-today").textContent = tasksToday;
+    }
+
+    function daysDone(plan) {
+      const days = new Set();
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        if (cb.checked && cb.dataset.plan === plan) {
+          const day = parseInt(cb.dataset.day, 10);
+          if (!isNaN(day)) days.add(day);
+        }
+      });
+      return days;
+    }
+
+    function computeStreak(plan) {
+      const done = daysDone(plan);
+      const max = plan === "trafego" ? 20 : 30;
+      let streak = 0;
+      for (let d = 1; d <= max; d++) {
+        if (done.has(d)) streak++;
+        else break;
+      }
+      return streak;
+    }
+
+    function computeTasksToday() {
+      const today = new Date();
+      const dayIndex = today.getDate(); // simplificado
+      let count = 0;
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      allCheckboxes.forEach(cb => {
+        const day = parseInt(cb.dataset.day, 10);
+        if (day === dayIndex && cb.checked) count++;
+      });
+      return count;
+    }
+
+    function setupAccordion() {
+      const headers = document.querySelectorAll(".accordion-header");
+      headers.forEach(header => {
+        const toggle = () => {
+          const content = header.nextElementSibling;
+          const isOpen = content.style.display === "block";
+          content.style.display = isOpen ? "none" : "block";
+          header.setAttribute("aria-expanded", String(!isOpen));
+        };
+        header.addEventListener("click", toggle);
+        header.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+        });
+      });
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById("calendar-grid");
+      grid.innerHTML = "";
+      const claude = daysDone("claude");
+      const trafego = daysDone("trafego");
+      for (let d = 1; d <= 30; d++) {
+        const div = document.createElement("div");
+        div.className = "calendar-day";
+        if (claude.has(d)) div.classList.add("done-claude");
+        if (trafego.has(d)) div.classList.add("done-trafego");
+        div.textContent = d;
+        grid.appendChild(div);
+      }
+    }
+
+    function updateGoals() {
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      let codeTasks = 0, codeCompleted = 0;
+      let designTasks = 0, designCompleted = 0;
+      let trafegoTasks = 0, trafegoCompleted = 0;
+
+      allCheckboxes.forEach(cb => {
+        const id = cb.dataset.taskId;
+        if (id.startsWith("claude-code")) {
+          codeTasks++;
+          if (cb.checked) codeCompleted++;
+        } else if (id.startsWith("claude-design")) {
+          designTasks++;
+          if (cb.checked) designCompleted++;
+        } else if (id.startsWith("trafego")) {
+          trafegoTasks++;
+          if (cb.checked) trafegoCompleted++;
+        }
+      });
+
+      const goal1Percent = codeTasks === 0 ? 0 : Math.round((codeCompleted / codeTasks) * 100);
+      const goal2Percent = designTasks === 0 ? 0 : Math.round((designCompleted / designTasks) * 100);
+      const goal3Percent = trafegoTasks === 0 ? 0 : Math.round((trafegoCompleted / trafegoTasks) * 100);
+
+      document.getElementById("goal-1").style.width = `${goal1Percent}%`;
+      document.getElementById("goal-2").style.width = `${goal2Percent}%`;
+      document.getElementById("goal-3").style.width = `${goal3Percent}%`;
+    }
+
+    function updateChart() {
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      let codeTasks = 0, codeCompleted = 0;
+      let designTasks = 0, designCompleted = 0;
+      let otherTasks = 0, otherCompleted = 0;
+
+      allCheckboxes.forEach(cb => {
+        const id = cb.dataset.taskId;
+        if (id.startsWith("claude-code")) {
+          codeTasks++;
+          if (cb.checked) codeCompleted++;
+        } else if (id.startsWith("claude-design")) {
+          designTasks++;
+          if (cb.checked) designCompleted++;
+        } else {
+          otherTasks++;
+          if (cb.checked) otherCompleted++;
+        }
+      });
+
+      const p1 = codeTasks === 0 ? 0 : Math.round((codeCompleted / codeTasks) * 100);
+      const p2 = designTasks === 0 ? 0 : Math.round((designCompleted / designTasks) * 100);
+      const p3 = otherTasks === 0 ? 0 : Math.round((otherCompleted / otherTasks) * 100);
+
+      document.getElementById("chart-bar-1").style.height = `${p1}%`;
+      document.getElementById("chart-bar-2").style.height = `${p2}%`;
+      document.getElementById("chart-bar-3").style.height = `${p3}%`;
+    }
+
+    function updateNotifications() {
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      const total = allCheckboxes.length;
+      let completed = 0;
+      allCheckboxes.forEach(cb => { if (cb.checked) completed++; });
+      const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      const notifMain = document.getElementById("notif-main");
+      const notifications = document.getElementById("notifications");
+
+      notifications.innerHTML = "";
+      notifications.appendChild(notifMain);
+
+      if (percent === 0) {
+        notifMain.textContent = "Ainda não há progresso suficiente para gerar notificações.";
+      } else if (percent < 50) {
+        const remaining = total - completed;
+        notifMain.textContent = `Faltam ${remaining} tarefas para completar 100% do plano. Continua!`;
+      } else if (percent < 80) {
+        notifMain.textContent = `Parabéns, completaste ${percent}% do plano! Mantém o ritmo.`;
+      } else {
+        notifMain.textContent = `Incrível, estás acima de ${percent}% de conclusão. Estás em modo Mestre.`;
+      }
+    }
+
+    function setupModeToggle() {
+      const modeToggle = document.getElementById("mode-toggle");
+      const modeLabel = document.getElementById("mode-label");
+      const state = loadState();
+      if (state.theme === "light") {
+        document.body.dataset.theme = "light";
+        modeLabel.textContent = "Claro";
+      } else {
+        document.body.dataset.theme = "dark";
+        modeLabel.textContent = "Escuro";
+      }
+
+      modeToggle.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); modeToggle.click(); }
+      });
+
+      modeToggle.addEventListener("click", () => {
+        const current = document.body.dataset.theme;
+        const next = current === "dark" ? "light" : "dark";
+        document.body.dataset.theme = next;
+        modeLabel.textContent = next === "dark" ? "Escuro" : "Claro";
+        const s = loadState();
+        s.theme = next;
+        saveState(s);
+      });
+    }
+
+    function setupSidebarNav() {
+      const links = document.querySelectorAll(".sidebar-link");
+      const sidebarNavEl = document.getElementById("sidebar-nav");
+      const sections = {
+        dashboard: document.getElementById("section-dashboard"),
+        planner: document.getElementById("section-planner"),
+        metas: document.getElementById("section-metas"),
+        calendario: document.getElementById("section-calendario"),
+        notas: document.getElementById("section-notas")
+      };
+
+      links.forEach(link => {
+        link.addEventListener("click", e => {
+          e.preventDefault();
+          sidebarNavEl.classList.remove("open");
+          document.getElementById("sidebar-toggle").setAttribute("aria-expanded", "false");
+          const section = link.dataset.section;
+          links.forEach(l => l.classList.remove("active"));
+          link.classList.add("active");
+          Object.keys(sections).forEach(key => {
+            sections[key].style.display = key === section ? "block" : "none";
+          });
+        });
+      });
+
+      const sidebarToggle = document.getElementById("sidebar-toggle");
+      const sidebarNav = document.getElementById("sidebar-nav");
+      sidebarToggle.addEventListener("click", () => {
+        const open = sidebarNav.classList.toggle("open");
+        sidebarToggle.setAttribute("aria-expanded", String(open));
+      });
+    }
+
+    function setupNotes() {
+      const notesClaude = document.getElementById("notes-claude");
+      const notesTrafego = document.getElementById("notes-trafego");
+      const state = loadState();
+      notesClaude.value = state.notesClaude || "";
+      notesTrafego.value = state.notesTrafego || "";
+
+      notesClaude.addEventListener("input", () => {
+        const s = loadState();
+        s.notesClaude = notesClaude.value;
+        saveState(s);
+      });
+
+      notesTrafego.addEventListener("input", () => {
+        const s = loadState();
+        s.notesTrafego = notesTrafego.value;
+        saveState(s);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      setupModeToggle();
+      setupSidebarNav();
+      setupNotes();
+      renderPlanner();
+    });
+  </script>
+</body>
+</html>
