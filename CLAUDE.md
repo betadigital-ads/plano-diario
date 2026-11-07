@@ -21,12 +21,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Pop-ups dos módulos com `:target`:** cada `<li>` de módulo liga a `#mod-c1…c5` (Claude) ou `#mod-t1…t5` (Tráfego); os `.modal` correspondentes estão no fim do `<main>` e abrem/fecham via `:target`. Fechar volta a `#cursos`. Ao adicionar um módulo, criar o `<li>` **e** o `.modal` com o `id` correspondente.
 - **Barras de progresso:** `.bar > span` usa a custom property inline `--value` (ex.: `style="--value:30%"`). Atualizar o `<strong>` de percentagem e o `aria-valuenow` em conjunto. Existem barras na secção "Cursos em andamento" e na "Progresso dos Cursos" — manter os valores consistentes.
 - **Animações de scroll** usam `animation-timeline: view()` dentro de `@supports`, com fallback estático; `prefers-reduced-motion` desliga tudo.
-- **Secções do `<main>`, por ordem:** Prioridade Máxima, Metas do Dia (checkboxes estilizados com `.check`/`.box`), Cursos em andamento, Progresso dos Cursos, Mini Dashboard, Rotina Manhã/Noite, Hábitos essenciais, Motivação diária (frase e autor trocados manualmente no comentário indicado), Vitórias do Dia, e o footer.
+- **Hero (no `<header>`): rótulo, número `.hero-num` (média dos dois cursos, atualizar à mão), curva `.glow-line`, título e botão. Secções do `<main>`, por ordem:** Prioridade Máxima, Metas do Dia (checkboxes estilizados com `.check`/`.box`), Cursos em andamento, Progresso dos Cursos, Mini Dashboard, Rotina Manhã/Noite, Hábitos essenciais, Motivação diária (frase e autor trocados manualmente no comentário indicado), Vitórias do Dia, e o footer.
 - Breakpoints responsivos: `900px` e `680px`.
 
 ## Git
 
-Repositório privado: https://github.com/betadigital-ads/planner (branch `main`, tag `v0.1.0` = backup da versão inicial).
+Repositório privado: https://github.com/betadigital-ads/planner (branch `main`, tags `v0.1.0` = versão inicial, `v0.2.0` = hero estilo poster). Segundo remote `plano-diario` (https://github.com/betadigital-ads/plano-diario, **público**): a `main` de lá é outro projeto (Plano Diário v1.3), por isso esta página vai só para a branch `velovis` (`git push plano-diario main:velovis`); nunca fazer force-push na `main` de lá.
 
 - Fazer commit de **cada alteração** com mensagem clara, e `git push` regularmente. O objetivo é poder reverter se algo correr mal.
 - Criar uma tag anotada (`vX.Y.Z`) em marcos importantes.
