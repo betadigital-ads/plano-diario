@@ -454,7 +454,14 @@
     }
     .accordion-header:hover { background: var(--glass-border); }
 
-    .accordion-content { display: none; padding: 12px; }
+    .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(.2,.7,.2,1); }
+    .accordion.open .accordion-content { grid-template-rows: 1fr; }
+    .ac-inner { overflow: hidden; min-height: 0; visibility: hidden; transition: visibility 0s 0.4s; }
+    .accordion.open .ac-inner { visibility: visible; transition-delay: 0s; }
+    .ac-pad { padding: 12px; }
+    .accordion-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .accordion-header::after { content: ""; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform 0.35s; flex-shrink: 0; }
+    .accordion.open .accordion-header::after { transform: rotate(225deg) translateY(-2px); }
 
     .day-card {
       border-radius: var(--r-day);
@@ -532,9 +539,51 @@
     .day-header { flex-wrap: wrap; }
     .day-label { min-width: 0; }
 
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; scroll-behavior: auto !important; }
+
+    /* ---------- ANIMAÇÃO ---------- */
+    :root { --ease: cubic-bezier(.2, .7, .2, 1); }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(22px); } }
+    @keyframes fadeIn { from { opacity: 0; } }
+    @keyframes sectionIn { from { opacity: 0; transform: translateY(14px); } }
+    @keyframes fillX { from { clip-path: inset(0 100% 0 0 round 999px); } to { clip-path: inset(0 0 0 0 round 999px); } }
+    @keyframes fillY { from { clip-path: inset(100% 0 0 0 round 999px); } to { clip-path: inset(0 0 0 0 round 999px); } }
+    @keyframes drift {
+      from { transform: translate3d(0, 0, 0) scale(1.04); }
+      to   { transform: translate3d(-1.5%, 1.2%, 0) scale(1.1); }
     }
+    @keyframes pop { 40% { transform: scale(1.35); } }
+
+    body::before { animation: drift 30s ease-in-out infinite alternate; }
+
+    .sidebar { animation: rise 0.8s var(--ease) both; }
+    .h1-top { animation: rise 0.9s var(--ease) 0.15s both; }
+    .h1-main { display: block; animation: rise 0.9s var(--ease) 0.3s both; }
+    header p { animation: rise 0.9s var(--ease) 0.5s both; }
+    .pill { animation: rise 0.8s var(--ease) both; }
+    .pill:nth-child(1) { animation-delay: 0.65s; }
+    .pill:nth-child(2) { animation-delay: 0.73s; }
+    .pill:nth-child(3) { animation-delay: 0.81s; }
+    .mode-toggle { animation: fadeIn 0.8s ease 0.9s both; }
+    .content { animation: fadeIn 0.9s ease 0.6s both; }
+    .dashboard-top > .card:nth-child(1) { animation: rise 0.9s var(--ease) 0.8s both; }
+    .dashboard-top > .card:nth-child(2) { animation: rise 0.9s var(--ease) 0.95s both; }
+
+    .progress-bar-fill { animation: fillX 1.3s var(--ease) 1.1s both; }
+    .goal-bar-fill { animation: fillX 1.2s var(--ease) 0.2s both; }
+    .chart-bar-fill { animation: fillY 1.2s var(--ease) 1.2s both; }
+    .stat-item { animation: rise 0.7s var(--ease) both; }
+    .stat-item:nth-child(1) { animation-delay: 1.15s; }
+    .stat-item:nth-child(2) { animation-delay: 1.25s; }
+    .stat-item:nth-child(3) { animation-delay: 1.35s; }
+
+    .section-in { animation: sectionIn 0.45s var(--ease) both; }
+    .tasks input.pop { animation: pop 0.35s ease; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
   </style>
 </head>
 <body data-theme="dark">
@@ -560,7 +609,7 @@
       <header>
         <div style="display:flex;align-items:center;gap:10px;">
           <div>
-            <h1><span class="h1-top">Plano Diário</span>Claude + Tráfego Pago</h1>
+            <h1><span class="h1-top">Plano Diário</span><span class="h1-main">Claude + Tráfego Pago</span></h1>
             <p>Dashboard completo com progresso, metas, calendário, notas e gamificação.</p>
           </div>
           <div class="mode-toggle" id="mode-toggle" role="button" tabindex="0" aria-label="Alternar modo claro/escuro">
@@ -598,8 +647,6 @@
                 </div>
               </div>
               <div class="stats-grid">
-                <div class="stat-item"><div class="stat-label">Streak Claude</div><div class="stat-value" id="streak-claude">0</div></div>
-                <div class="stat-item"><div class="stat-label">Streak Tráfego</div><div class="stat-value" id="streak-trafego">0</div></div>
                 <div class="stat-item"><div class="stat-label">Dias Claude (de 30)</div><div class="stat-value" id="days-claude">0</div></div>
                 <div class="stat-item"><div class="stat-label">Dias Tráfego (de 20)</div><div class="stat-value" id="days-trafego">0</div></div>
                 <div class="stat-item"><div class="stat-label">Tarefas hoje</div><div class="stat-value" id="tasks-today">0</div></div>
@@ -1017,9 +1064,24 @@
       });
 
       const trafegoContainer = document.getElementById("plan-trafego");
-      trafegoPlan.forEach(dayObj => {
-        const card = createDayCard("trafego", "Tráfego Pago", dayObj);
-        trafegoContainer.appendChild(card);
+      [[1, 5], [6, 10], [11, 15], [16, 20]].forEach(([from, to]) => {
+        const acc = document.createElement("div");
+        acc.className = "accordion";
+        const head = document.createElement("div");
+        head.className = "accordion-header";
+        head.setAttribute("role", "button");
+        head.setAttribute("tabindex", "0");
+        head.setAttribute("aria-expanded", "false");
+        head.textContent = `Tráfego Pago – Dias ${from} a ${to}`;
+        const body = document.createElement("div");
+        body.className = "accordion-content";
+        body.id = `trafego-${from}-${to}`;
+        trafegoPlan.filter(d => d.day >= from && d.day <= to).forEach(dayObj => {
+          body.appendChild(createDayCard("trafego", "Tráfego Pago", dayObj));
+        });
+        acc.appendChild(head);
+        acc.appendChild(body);
+        trafegoContainer.appendChild(acc);
       });
 
       const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -1042,6 +1104,9 @@
 
       allCheckboxes.forEach(cb => {
         cb.addEventListener("change", () => {
+          cb.classList.remove("pop");
+          void cb.offsetWidth;
+          cb.classList.add("pop");
           const state = loadState();
           const id = cb.dataset.taskId;
           state[id] = cb.checked;
@@ -1055,6 +1120,25 @@
       });
     }
 
+    const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function setNum(id, value, suffix = "") {
+      const el = document.getElementById(id);
+      const from = el._v || 0;
+      el._v = value;
+      cancelAnimationFrame(el._raf);
+      if (REDUCED || from === value) { el.textContent = value + suffix; return; }
+      const start = performance.now();
+      const dur = 900;
+      const tick = now => {
+        const t = Math.min((now - start) / dur, 1);
+        const e = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(from + (value - from) * e) + suffix;
+        if (t < 1) el._raf = requestAnimationFrame(tick);
+      };
+      el._raf = requestAnimationFrame(tick);
+    }
+
     function updateProgress() {
       const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
       const total = allCheckboxes.length;
@@ -1066,9 +1150,9 @@
 
       const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
-      document.getElementById("total-count").textContent = total;
-      document.getElementById("completed-count").textContent = completed;
-      document.getElementById("progress-percent").textContent = `${percent}%`;
+      setNum("total-count", total);
+      setNum("completed-count", completed);
+      setNum("progress-percent", percent, "%");
       document.getElementById("progress-bar").style.width = `${percent}%`;
 
       const levelLabel = document.getElementById("level-label");
@@ -1078,13 +1162,11 @@
       else if (percent < 80) levelLabel.textContent = "Gestor";
       else levelLabel.textContent = "Mestre Claude";
 
-      document.getElementById("days-claude").textContent = daysDone("claude").size;
-      document.getElementById("days-trafego").textContent = daysDone("trafego").size;
-      document.getElementById("streak-claude").textContent = computeStreak("claude");
-      document.getElementById("streak-trafego").textContent = computeStreak("trafego");
+      setNum("days-claude", daysDone("claude").size);
+      setNum("days-trafego", daysDone("trafego").size);
 
       const tasksToday = computeTasksToday();
-      document.getElementById("tasks-today").textContent = tasksToday;
+      setNum("tasks-today", tasksToday);
     }
 
     function daysDone(plan) {
@@ -1096,17 +1178,6 @@
         }
       });
       return days;
-    }
-
-    function computeStreak(plan) {
-      const done = daysDone(plan);
-      const max = plan === "trafego" ? 20 : 30;
-      let streak = 0;
-      for (let d = 1; d <= max; d++) {
-        if (done.has(d)) streak++;
-        else break;
-      }
-      return streak;
     }
 
     function computeTasksToday() {
@@ -1124,11 +1195,17 @@
     function setupAccordion() {
       const headers = document.querySelectorAll(".accordion-header");
       headers.forEach(header => {
+        const content = header.nextElementSibling;
+        const inner = document.createElement("div");
+        inner.className = "ac-inner";
+        const pad = document.createElement("div");
+        pad.className = "ac-pad";
+        while (content.firstChild) pad.appendChild(content.firstChild);
+        inner.appendChild(pad);
+        content.appendChild(inner);
         const toggle = () => {
-          const content = header.nextElementSibling;
-          const isOpen = content.style.display === "block";
-          content.style.display = isOpen ? "none" : "block";
-          header.setAttribute("aria-expanded", String(!isOpen));
+          const isOpen = header.parentElement.classList.toggle("open");
+          header.setAttribute("aria-expanded", String(isOpen));
         };
         header.addEventListener("click", toggle);
         header.addEventListener("keydown", e => {
@@ -1284,6 +1361,10 @@
           Object.keys(sections).forEach(key => {
             sections[key].style.display = key === section ? "block" : "none";
           });
+          const shown = sections[section];
+          shown.classList.remove("section-in");
+          void shown.offsetWidth;
+          shown.classList.add("section-in");
         });
       });
 
